@@ -9,5 +9,5 @@ CREATE TABLE movieDB(
   name VARCHAR(255) UNIQUE NOT NULL,
   category VARCHAR(255),
   length INT,
-  rented BOOLEAN NOT NULL DEFAULT 0
+  rented INT NOT NULL DEFAULT 0
 )ENGINE=InnoDB;
