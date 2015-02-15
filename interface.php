@@ -42,11 +42,27 @@ Assignment 4 Part 2
   </form>
   <p>
     <h2>Video Database</h2>
-    <form method="POST" action='interface.php' form='category'>
+    <?php
+    if (isset($_POST["filter_category"])){
+      $filterValue = $_POST["filter_category"];
+      // echo "filter value" $filterValue;
+    }
+    else{
+      $filterValue = 'All Movies';
+      // echo "filter value" $filterValue;
+    }
+    ?>
+    <form method="POST" action='interface.php'>
       <legend>Filter by Category:</legend>
       <select name ="filter_category">
-        <option>All Movies</option>
+        <option value="All Movies">All Movies</option>
+
         <?php
+        $mysqli = new mysqli("oniddb.cws.oregonstate.edu", "willardm-db", $myPassword, "willardm-db");
+
+        if (!$mysqli || $mysqli->connect_errno){
+          echo "Connnection error " . $mysqli->connect_errno . " " . $mysqli->connect_error;
+        }
         // Fetch the categories from the DB
         $get_categories = "SELECT DISTINCT category FROM movieDB";
         if($result = $mysqli->query($get_categories)){
@@ -56,8 +72,9 @@ Assignment 4 Part 2
         }
         $result->close();
         ?>
+
       </select>
-      <input type="submit" id="category" name="filter_category" value="Apply Filter">
+      <input type="submit" value="Apply Filter">
     </form>
   </p>
   <!-- CREATE THE TABLE -->
@@ -78,24 +95,14 @@ Assignment 4 Part 2
     echo "Connnection error " . $mysqli->connect_errno . " " . $mysqli->connect_error;
   }
 
-  // if (!($tableOut = $mysqli->prepare("SELECT id, name, category, length, rented FROM movieDB"))) {
-  //     echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
-  // }
-  //
-  // if (!$tableOut->execute()) {
-  //     echo "Execute failed: (" . $mysqli->errno . ") " . $mysqli->error;
-  // }
-  //
-  // $out_id    = NULL;
-  // $out_name = NULL;
-  // $out_category = NULL;
-  // $out_length = NULL;
-  // $out_avail = NULL; //0 for available, 1 for checked out
-  //
-  // if (!$tableOut->bind_result($out_id, $out_name, $out_category, $out_length, $out_avail)) {
-  //     echo "Binding output parameters failed: (" . $stmt->errno . ") " . $tableOut->error;
-  // }
-  $queryStmt = "SELECT id, name, category, length, rented FROM movieDB";
+  // Check for filtering
+  if ($filterValue != 'All Movies'){
+    $queryStmt = "SELECT id, name, category, length, rented FROM movieDB WHERE category = '" . $filterValue . "'";
+  }
+  else{
+    $queryStmt = "SELECT id, name, category, length, rented FROM movieDB";
+  }
+  // $queryStmt = "SELECT id, name, category, length, rented FROM movieDB";
   $tableOut = $mysqli->query($queryStmt);
 
   if ($tableOut->num_rows > 0){
@@ -110,12 +117,20 @@ Assignment 4 Part 2
       echo "<tr><td>" . $row[1] .
       "</td><td>". $row[2] .
       "</td><td>". $row[3] .
-      "</td><td>". $out_text . $row[4];
-      echo "<form action='tableRefresh.php method='POST'>
-      <input type='hidden' name='id' value='$idVal'>
-      <input type='submit' name='change_status' value='Change Status'>
-      </form></td>";
-      echo "<form action='tableRefresh.php method='POST'>
+      "</td><td>". $out_text;
+      if ($row[4] === '0'){
+        echo "<form action='tableRefresh.php' method='POST'>
+        <input type='hidden' name='id' value='$idVal'>
+        <input type='submit' name='checkOut' value='Check Out'>
+        </form></td>";
+      }
+      elseif($row[4] === '1'){
+        echo "<form action='tableRefresh.php' method='POST'>
+        <input type='hidden' name='id' value='$idVal'>
+        <input type='submit' name='checkIn' value='Check In'>
+        </form></td>";
+      }
+      echo "<form action='tableRefresh.php' method='POST'>
       <input type='hidden' name='id' value='$idVal'>
       <td><input type='submit' name='delete_entry' value='Delete Entry'>
       </form></td>";
@@ -126,5 +141,11 @@ Assignment 4 Part 2
   }
   ?>
 </table>
+<p>
+  <form action='tableRefresh.php' method='POST'>
+    <input type="submit" name="kill_em_all" value="Clear the Database"/>
+  </form>
+</p>
+
 </body>
 </html>
