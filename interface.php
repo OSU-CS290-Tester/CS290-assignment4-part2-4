@@ -42,6 +42,7 @@ Assignment 4 Part 2
   </form>
   <p>
     <h2>Video Database</h2>
+
     <?php
     if (isset($_POST["filter_category"])){
       $filterValue = $_POST["filter_category"];
@@ -52,6 +53,7 @@ Assignment 4 Part 2
       // echo "filter value" $filterValue;
     }
     ?>
+
     <form method="POST" action='interface.php'>
       <legend>Filter by Category:</legend>
       <select name ="filter_category">
@@ -80,7 +82,6 @@ Assignment 4 Part 2
   <!-- CREATE THE TABLE -->
 <table border="1">
   <tr>
-    <!--<td>ID</td>-->
     <td>Title</td>
     <td>Category</td>
     <td>Length</td>
@@ -102,7 +103,6 @@ Assignment 4 Part 2
   else{
     $queryStmt = "SELECT id, name, category, length, rented FROM movieDB";
   }
-  // $queryStmt = "SELECT id, name, category, length, rented FROM movieDB";
   $tableOut = $mysqli->query($queryStmt);
 
   if ($tableOut->num_rows > 0){
@@ -117,15 +117,17 @@ Assignment 4 Part 2
       echo "<tr><td>" . $row[1] .
       "</td><td>". $row[2] .
       "</td><td>". $row[3] .
-      "</td><td>". $out_text;
+      "</td>";
       if ($row[4] === '0'){
-        echo "<form action='tableRefresh.php' method='POST'>
+        echo "<td bgcolor='green'>" . $out_text . 
+        "<form action='tableRefresh.php' method='POST'>
         <input type='hidden' name='id' value='$idVal'>
         <input type='submit' name='checkOut' value='Check Out'>
         </form></td>";
       }
       elseif($row[4] === '1'){
-        echo "<form action='tableRefresh.php' method='POST'>
+        echo "<td bgcolor='red'>" . $out_text .
+        "<form action='tableRefresh.php' method='POST'>
         <input type='hidden' name='id' value='$idVal'>
         <input type='submit' name='checkIn' value='Check In'>
         </form></td>";

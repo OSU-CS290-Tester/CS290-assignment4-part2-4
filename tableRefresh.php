@@ -11,7 +11,6 @@ ini_set('display_errors','On');
 
 // Parse the POST request to check which function was requested
 if(isset($_POST["add_item"])){
-  // echo "Adding Item";
   addItem($_POST["in_name"], $_POST["in_category"], $_POST["in_length"]);
 }
 if(isset($_POST["checkIn"])){
@@ -55,7 +54,6 @@ function addItem($varName, $varCat, $varLen){
   else{
     // Connect to the DB
     $mysqli = new mysqli("oniddb.cws.oregonstate.edu", "willardm-db", "d5F4Pqrfv3YF9nBt", "willardm-db");
-
     if(!$mysqli || $mysqli->connect_errno){
       echo "Connnection error " . $mysqli->connect_errno . " " . $mysqli->connect_error;
     }
@@ -175,7 +173,6 @@ function deleteEntry($varId){
   if (!$stmtDel->execute()) {
     echo "Execute failed: (" . $stmtDel->errno . ") " . $stmtDel->error;
   }
-  // $stmtDel->close();
   echo $varId;
   echo "This item was deleted from the database.";
   echo "<p>Click <a href=\"$redirect1\">here</a> to go back.";
@@ -209,5 +206,4 @@ function killEmAll(){
   echo "The database was emptied.";
   echo "<p>Click <a href=\"$redirect1\">here</a> to go back.";
 }
-
 ?>
